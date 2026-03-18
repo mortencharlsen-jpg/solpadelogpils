@@ -5,11 +5,236 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Sol - Padel - Pils</title>
 <script src="https://cdn.tailwindcss.com"></script>
+<!-- Firebase SDK -->
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<style>
+body { background: #f3f4f6; color: #1f2937; transition: all 0.3s; }
+.header-bg {
+  background-image: url('https://a0.muscache.com/im/pictures/d2290384-93e0-45e1-9a3c-fc1651f4484d.jpg?im_w=1200');
+  background-size: 130% auto; /* 30% større */
+  background-position: center;
+  padding: 1.5rem;
+  border-radius: 1rem;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  text-align: center;
+}
+#handlelisteBtn { background-color: #1E40AF; color: white; }
+.overlay {
+  background: rgba(255,255,255,0.9);
+  padding: 1rem;
+  border-radius: 1rem;
+  margin-bottom: 1rem;
+}
+.map-container {
+  position: relative;
+  width: 100%;
+  padding-bottom: 28.125%;
+  border-radius: 1rem;
+  overflow: hidden;
+  margin-bottom: 0.5rem;
+  background-image: url('https://media.wired.com/photos/59269cd37034dc5f91bec0f1/3:2/w_2560%2Cc_limit/GoogleMapTA.jpg');
+  background-size: cover;
+  background-position: center;
+}
+.flex-center { display: flex; justify-content: center; gap: 2rem; flex-wrap: wrap; text-align: center; }
+.button-group { display: flex; flex-direction: column; align-items: center; gap: 0.25rem; width: 150px; }
+.button-group a { display: flex; align-items: center; justify-content: center; gap: 0.5rem; width: 100%; text-align: center; }
+#handlelisteModal { position: fixed; inset:0; display:none; justify-content:center; align-items:center; background-color:rgba(0,0,0,0.5); z-index:50; }
+#handlelisteModal.active { display:flex; }
+#handlelisteContent { background-color:white; border-radius:1rem; padding:1rem; max-width:400px; width:90%; max-height:80%; overflow-y:auto; position:relative; display:flex; flex-direction:column; gap:0.5rem; }
+.handleliste-buttons button { width:100%; padding:0.5rem 0; border-radius:0.5rem; font-size:1rem; text-align:center; }
+#closeHandleliste { background-color:#ef4444; color:white; border:none; cursor:pointer; }
+#addItemBtn { background-color:#10b981; color:white; border:none; cursor:pointer; }
+.boughtBtn { background-color:#f59e0b; color:white; border:none; cursor:pointer; }
+</style>
 </head>
 <body>
-<h1>Sol - Padel - Pils</h1>
-<p>Last ned fullversjonen fra ChatGPT – denne er en placeholder hvis noe gikk galt.</p>
+
+<div class="max-w-2xl mx-auto mt-4">
+
+  <div class="header-bg">
+    <h1 class="text-3xl font-bold">☀️ Sol - Padel - Pils</h1>
+    <button id="handlelisteBtn" class="px-3 py-2 rounded w-full">Mat/drikke vi må ha 🛒</button>
+  </div>
+
+  <!-- Handleliste Popup -->
+  <div id="handlelisteModal">
+    <div id="handlelisteContent">
+      <div class="handleliste-buttons">
+        <button id="closeHandleliste">Lukk ✖</button>
+      </div>
+      <h2 class="font-bold text-xl mb-2">Handleliste</h2>
+      <div class="flex gap-2 mb-2">
+        <input type="text" id="itemInput" class="flex-1 p-2 border rounded" placeholder="Legg til vare" />
+        <button id="addItemBtn" class="handleliste-buttons">Legg til</button>
+      </div>
+      <ul id="itemList" class="space-y-1 max-h-64 overflow-y-auto"></ul>
+    </div>
+  </div>
+
+  <!-- Huset med kartbilde -->
+  <div class="overlay">
+    <h2 class="font-semibold text-lg mb-2">📍 Her ligger kåken</h2>
+    <div class="map-container"></div>
+    <div class="flex flex-col sm:flex-row gap-2 mt-2">
+      <button onclick="copyAddress()" class="bg-blue-500 text-white px-3 py-1 rounded flex-1">Kopier adresse</button>
+      <a href="https://maps.app.goo.gl/iRd5qfgutrrJeceP7" target="_blank" class="bg-green-600 text-white px-3 py-1 rounded flex-1 text-center">Åpne kart</a>
+    </div>
+  </div>
+
+  <!-- Nødnummer og Transport side-by-side -->
+  <div class="overlay flex-center">
+    <div class="button-group">
+      <span>🚨</span>
+      <a href="tel:112" class="bg-red-600 text-white px-4 py-2 rounded inline-block">Ring 112</a>
+    </div>
+    <div class="button-group">
+      <span>🚖</span>
+      <a href="uber://" onclick="setTimeout(()=>{window.location='https://apps.apple.com/app/uber/id368677368';},500)" class="bg-blue-600 text-white px-4 py-2 rounded inline-block">Åpne Uber</a>
+    </div>
+    <div class="button-group">
+      <span>💬</span>
+      <a href="https://www.messenger.com/t/6569550986473192" target="_blank" class="bg-indigo-600 text-white px-4 py-2 rounded inline-block">Messenger</a>
+    </div>
+  </div>
+
+  <!-- Tidsplan -->
+  <div class="overlay">
+    <h2 class="font-semibold text-lg mb-2">🕒 Plan</h2>
+    <div id="schedule" class="space-y-4"></div>
+  </div>
+</div>
+
+<script>
+// --- Firebase setup ---
+// Fyll inn din Firebase-konfigurasjon her
+const firebaseConfig = {
+ apiKey: "AIzaSyC0zG-NE34259l9vqpuvMJxq2h39PDXfhs",
+  authDomain: "handleliste-spania.firebaseapp.com",
+  projectId: "handleliste-spania",
+  storageBucket: "handleliste-spania.firebasestorage.app",
+  messagingSenderId: "1080840582258",
+  appId: "1:1080840582258:web:1d154ceda35b87dbc7feeb",
+  measurementId: "G-0G42XJB4YH"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+const handlelisteRef = db.collection('handleliste');
+
+// --- Handleliste i sanntid ---
+const handlelisteModal = document.getElementById('handlelisteModal');
+const handlelisteBtn = document.getElementById('handlelisteBtn');
+const closeHandleliste = document.getElementById('closeHandleliste');
+const addItemBtn = document.getElementById('addItemBtn');
+const itemInput = document.getElementById('itemInput');
+const itemList = document.getElementById('itemList');
+
+handlelisteBtn.addEventListener('click', () => handlelisteModal.classList.add('active'));
+closeHandleliste.addEventListener('click', () => handlelisteModal.classList.remove('active'));
+
+function addItemFirebase(text) {
+  handlelisteRef.add({ name: text, bought: false });
+}
+
+addItemBtn.addEventListener('click', () => {
+  const value = itemInput.value.trim();
+  if(value){
+    addItemFirebase(value);
+    itemInput.value = '';
+  }
+});
+itemInput.addEventListener('keypress', e => { if(e.key === 'Enter') addItemBtn.click(); });
+
+// Lytt i sanntid
+handlelisteRef.orderBy('name').onSnapshot(snapshot => {
+  itemList.innerHTML = '';
+  snapshot.forEach(doc => {
+    const data = doc.data();
+    if(!data.bought){
+      const li = document.createElement('li');
+      li.className = 'flex flex-col sm:flex-row justify-between items-center p-2 bg-gray-100 rounded gap-2';
+      li.innerHTML = `<span>${data.name}</span><button class='boughtBtn'>Kjøpt</button>`;
+      li.querySelector('button').addEventListener('click', () => {
+        handlelisteRef.doc(doc.id).update({ bought: true });
+      });
+      itemList.appendChild(li);
+    }
+  });
+});
+
+// Kopier adresse
+function copyAddress() {
+  const text = 'C. Cártama, 29649 La Cala de Mijas, Málaga, Spania';
+  navigator.clipboard.writeText(text);
+  alert("Adresse kopiert!");
+}
+
+// --- Programmet (tidsplan) ---
+// Sett inn hele tidsplanen her som før
+const scheduleData = [
+  { day: 'Torsdag 30.04.26', items: [
+    {time:'11:30', text:'Avreise BGO'},
+    {time:'15:30', text:'Ankomst AGP'},
+    {time:'16:15', text:'Ankomst La Cala de Mijas med privatsjåfør'},
+    {time:'20:30', text:'Restaurant Taberna Casa Pino - <a href=\"https://share.google/5IlUM00G69chFBHWO\" target=\"_blank\">Tripadvisor</a>'},
+  ]},
+  { day:'Fredag 01.05.26', items:[
+    {time:'10:00', text:'Padel 2t på <a href=\"https://www.google.com/maps/place/Riviera11+Sports+Club\" target=\"_blank\">Riviera11 Sports Club</a>'},
+    {time:'20:00', text:'Restaurant El Olivo - <a href=\"https://www.tripadvisor.com/Restaurant_Review-g1892987-d1917642-Reviews-El_Olivo_de_la_Cala-La_Cala_de_Mijas_Mijas_Costa_del_Sol_Province_of_Malaga_Anda.html\" target=\"_blank\">Tripadvisor</a>'},
+  ]},
+  { day:'Lørdag 02.05.26', items:[
+    {time:'11:00-13:00', text:'Padelturnering på Riviera11 Sport Club'},
+    {time:'13:00', text:'BBQ lunch'},
+    {time:'20:00', text:'Restaurant Cyrano - <a href=\"https://www.tripadvisor.com/Restaurant_Review-g1892987-d28123846-Reviews-Cyrano-La_Cala_de_Mijas_Mijas_Costa_del_Sol_Province_of_Malaga_Andalucia.html\" target=\"_blank\">Tripadvisor</a>'},
+  ]},
+  { day:'Søndag 03.05.26', items:[
+    {time:'11:00', text:'Tur langs Sendero Litoral'},
+    {time:'15:00', text:'Lunch på Capobino'},
+    {time:'20:00', text:'Restaurant Sai Indian - <a href=\"https://www.tripadvisor.com/Restaurant_Review-g1892987-d3485825-Reviews-Sai_Indian_Restaurant-La_Cala_de_Mijas_Mijas_Costa_del_Sol_Province_of_Malaga_An.html\" target=\"_blank\">Tripadvisor</a>'},
+  ]},
+  { day:'Mandag 04.05.26', items:[
+    {time:'10:00', text:'Padel 2t på Riviera11 Sports Club'},
+    {time:'Resten av dagen', text:'Avslapping rundt hus'},
+  ]},
+  { day:'Tirsdag 05.05.26', items:[
+    {time:'18:30', text:'Avreise til AGP med privatsjåfør'},
+    {time:'20:05', text:'Avgang AGP'},
+    {time:'23:55', text:'Ankomst BGO'},
+  ]},
+  { day:'Onsdag 06.05.26', items:[
+    {time:'Hele dagen', text:'Fyllesyk'},
+  ]}
+];
+
+function renderSchedule() {
+  const list = document.getElementById("schedule");
+  list.innerHTML = '';
+  scheduleData.forEach(day => {
+    const dayDiv = document.createElement('div');
+    dayDiv.className = 'mb-3';
+    const dayHeader = document.createElement('h3');
+    dayHeader.className = 'font-bold text-xl mb-1 underline';
+    dayHeader.innerText = day.day;
+    dayDiv.appendChild(dayHeader);
+    const ul = document.createElement('ul');
+    ul.className = 'space-y-1';
+    day.items.forEach(item => {
+      const li = document.createElement('li');
+      li.className = 'p-2 rounded';
+      li.innerHTML = `<strong>${item.time}</strong> - ${item.text}`;
+      ul.appendChild(li);
+    });
+    dayDiv.appendChild(ul);
+    list.appendChild(dayDiv);
+  });
+}
+renderSchedule();
+setInterval(renderSchedule, 60000);
+</script>
+
 </body>
 </html>
