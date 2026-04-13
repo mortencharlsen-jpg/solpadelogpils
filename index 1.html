@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sol - Padel - Pils</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+body { background: #f3f4f6; color: #1f2937; }
+.header-bg {
+  background-image: url('https://a0.muscache.com/im/pictures/d2290384-93e0-45e1-9a3c-fc1651f4484d.jpg?im_w=1200');
+  background-size: 130% auto;
+  background-position: center;
+  padding: 1.5rem;
+  border-radius: 1rem;
+  color: white;
+  text-align: center;
+}
+.overlay {
+  background: rgba(255,255,255,0.9);
+  padding: 1rem;
+  border-radius: 1rem;
+  margin-bottom: 1rem;
+}
+.map-container {
+  width: 100%;
+  padding-bottom: 28.125%;
+  border-radius: 1rem;
+  overflow: hidden;
+  margin-bottom: 0.5rem;
+  background-image: url('https://media.wired.com/photos/59269cd37034dc5f91bec0f1/3:2/w_2560%2Cc_limit/GoogleMapTA.jpg');
+  background-size: cover;
+  background-position: center;
+}
+.flex-center { display: flex; justify-content: center; gap: 2rem; flex-wrap: wrap; text-align: center; }
+.button-group { display: flex; flex-direction: column; align-items: center; gap: 0.25rem; width: 150px; }
+.button-group a { display: flex; align-items: center; justify-content: center; gap: 0.5rem; width: 100%; text-align: center; }
+</style>
+</head>
+<body>
+
+<div class="max-w-2xl mx-auto mt-4 px-4 pb-8">
+
+  <div class="header-bg mb-4">
+    <h1 class="text-3xl font-bold drop-shadow-lg">☀️ Sol - Padel - Pils</h1>
+  </div>
+
+  <div class="overlay">
+    <h2 class="font-semibold text-lg mb-2">📍 Her ligger kåken</h2>
+    <div class="map-container"></div>
+    <div class="flex flex-col sm:flex-row gap-2 mt-2">
+      <button onclick="copyAddress()" class="bg-blue-500 text-white px-3 py-1 rounded flex-1 cursor-pointer">Kopier adresse</button>
+      <a href="https://maps.app.goo.gl/iRd5qfgutrrJeceP7" target="_blank" class="bg-green-600 text-white px-3 py-1 rounded flex-1 text-center">Åpne kart</a>
+    </div>
+  </div>
+
+  <div class="overlay flex-center">
+    <div class="button-group">
+      <span class="text-2xl">🚨</span>
+      <a href="tel:112" class="bg-red-600 text-white px-4 py-2 rounded inline-block">Ring 112</a>
+    </div>
+    <div class="button-group">
+      <span class="text-2xl">🚖</span>
+      <a href="uber://" onclick="setTimeout(()=>{window.location='https://apps.apple.com/app/uber/id368677368';},500)" class="bg-blue-600 text-white px-4 py-2 rounded inline-block">Åpne Uber</a>
+    </div>
+    <div class="button-group">
+      <span class="text-2xl">💬</span>
+      <a href="https://www.messenger.com/t/931893452953162" target="_blank" class="bg-indigo-600 text-white px-4 py-2 rounded inline-block">Messenger</a>
+    </div>
+  </div>
+
+  <div class="overlay">
+    <h2 class="font-semibold text-lg mb-2">🕒 Plan</h2>
+    <div id="schedule" class="space-y-4"></div>
+  </div>
+</div>
+
+<script>
+function copyAddress() {
+  navigator.clipboard.writeText('C. Cártama, 29649 La Cala de Mijas, Málaga, Spania');
+  alert("Adresse kopiert!");
+}
+
+const scheduleData = [
+  { day:'Torsdag 30.04.26', items:[
+    {time:'11:30', text:'Avreise BGO'},
+    {time:'15:30', text:'Ankomst AGP'},
+    {time:'16:15', text:'Ankomst La Cala de Mijas'},
+    {time:'20:30', text:'Restaurant Taberna Casa Pino - <a href="https://share.google/5IlUM00G69chFBHWO" target="_blank" class="text-blue-600 underline">Tripadvisor</a>'},
+  ]},
+  { day:'Fredag 01.05.26', items:[
+    {time:'11:00', text:'Padel 2t på <a href="https://www.google.com/maps/place/Riviera11+Sports+Club" target="_blank" class="text-blue-600 underline">Riviera11 Sports Club</a>'},
+    {time:'14:00', text:"Lunsj a'la Maanum i huset"},
+    {time:'20:00', text:'Restaurant El Olivo - <a href="https://www.tripadvisor.com/Restaurant_Review-g1892987-d1917642-Reviews-El_Olivo_de_la_Cala-La_Cala_de_Mijas_Mijas_Costa_del_Sol_Province_of_Malaga_Anda.html" target="_blank" class="text-blue-600 underline">Tripadvisor</a>'},
+  ]},
+  { day:'Lørdag 02.05.26', items:[
+    {time:'11:00-13:00', text:'Padelturnering på Riviera11 Sport Club'},
+    {time:'13:00', text:'BBQ lunch på stedet'},
+    {time:'20:00', text:'Restaurant Nilo - <a href="https://nilorestaurant.com/" target="_blank" class="text-blue-600 underline">Lenke til stedet</a>'},
+  ]},
+  { day:'Søndag 03.05.26', items:[
+    {time:'11:00', text:'Tur langs Sendero Litoral'},
+    {time:'15:00', text:'Lunch et sted rundt Capobino/Luna Beach'},
+    {time:'20:00', text:'Restaurant Sai Indian - <a href="https://www.tripadvisor.com/Restaurant_Review-g1892987-d3485825-Reviews-Sai_Indian_Restaurant-La_Cala_de_Mijas_Mijas_Costa_del_Sol_Province_of_Malaga_An.html" target="_blank" class="text-blue-600 underline">Tripadvisor</a>'},
+  ]},
+  { day:'Mandag 04.05.26', items:[
+    {time:'11:00', text:'Padel 2t på Riviera11 Sports Club'},
+    {time:'Resten av dagen', text:'Avslapping rundt hus'},
+  ]},
+  { day:'Tirsdag 05.05.26', items:[
+    {time:'18:30', text:'Avreise til AGP med privatsjåfør'},
+    {time:'20:05', text:'Avgang AGP'},
+    {time:'23:55', text:'Ankomst BGO'},
+  ]},
+  { day:'Onsdag 06.05.26', items:[
+    {time:'Hele dagen', text:'Fyllesyk'},
+  ]}
+];
+
+const list = document.getElementById("schedule");
+scheduleData.forEach(day => {
+  const div = document.createElement('div');
+  div.innerHTML = '<h3 class="font-bold text-xl mb-1 underline">' + day.day + '</h3>' +
+    '<ul class="space-y-1">' + day.items.map(i => '<li class="p-2 rounded"><strong>' + i.time + '</strong> – ' + i.text + '</li>').join('') + '</ul>';
+  list.appendChild(div);
+});
+</script>
+
+</body>
+</html>
