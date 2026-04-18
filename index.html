@@ -121,51 +121,5 @@ const scheduleData = [
 ], checklist: true}
 ];
 
-const list = document.getElementById("schedule");
-scheduleData.forEach(day => {
-const div = document.createElement('div');
-let html = '<h3 class="font-bold text-xl mb-1 underline">' + day.day + '</h3>' +
-'<ul class="space-y-1">' + day.items.map(i => '<li class="p-2 rounded"><strong>' + i.time + '</strong> – ' + i.text + '</li>').join('') + '</ul>';
-
-if (day.checklist) {
-html += '<div class="checklist-section">';
-html += '<h4>📋 Huskeliste:</h4>';
-html += '<h5 style="font-weight: bold; margin: 0.5rem 0 0.25rem;">Klær</h5>';
-html += '<label class="checklist-label"><input type="checkbox"> T-skjorter</label>';
-html += '<label class="checklist-label"><input type="checkbox"> Shorts</label>';
-html += '<label class="checklist-label"><input type="checkbox"> Lett bukse/jeans</label>';
-html += '<label class="checklist-label"><input type="checkbox"> Undertøy</label>';
-html += '<label class="checklist-label"><input type="checkbox"> Sokker</label>';
-html += '<label class="checklist-label"><input type="checkbox"> Lett genser/jakke</label>';
-html += '<label class="checklist-label"><input type="checkbox"> Badetøy</label>';
-html += '<label class="checklist-label"><input type="checkbox"> Treningsklær (2–3 sett)</label>';
-html += '<h5 style="font-weight: bold; margin: 0.5rem 0 0.25rem;">Padel og sport</h5>';
-html += '<label class="checklist-label"><input type="checkbox"> Padel-/treningssko</label>';
-html += '<label class="checklist-label"><input type="checkbox"> Treningssokker</label>';
-html += '<label class="checklist-label"><input type="checkbox"> Padelracket</label>';
-html += '<label class="checklist-label"><input type="checkbox"> Liten treningsbag</label>';
-html += '<h5 style="font-weight: bold; margin: 0.5rem 0 0.25rem;">Toalettartikler</h5>';
-html += '<label class="checklist-label"><input type="checkbox"> Tannbørste</label>';
-html += '<label class="checklist-label"><input type="checkbox"> Tannkrem</label>';
-html += '<label class="checklist-label"><input type="checkbox"> Deodorant</label>';
-html += '<label class="checklist-label"><input type="checkbox"> Barberutstyr</label>';
-html += '<label class="checklist-label"><input type="checkbox"> Solkrem</label>';
-html += '<label class="checklist-label"><input type="checkbox"> Aftersun</label>';
-html += '<h5 style="font-weight: bold; margin: 0.5rem 0 0.25rem;">Annet</h5>';
-html += '<label class="checklist-label"><input type="checkbox"> Solbriller</label>';
-html += '<label class="checklist-label"><input type="checkbox"> Pen skjorte/poloskjorte</label>';
-html += '<label class="checklist-label"><input type="checkbox"> Belte</label>';
-html += '<label class="checklist-label"><input type="checkbox"> Powerbank</label>';
-html += '<label class="checklist-label"><input type="checkbox"> Hodetelefoner</label>';
-html += '<label class="checklist-label"><input type="checkbox"> Pass</label>';
-html += '<label class="checklist-label"><input type="checkbox"> Lommebok/kort</label>';
-html += '<label class="checklist-label"><input type="checkbox"> Mobil og lader</label>';
-html += '</div>';\n}
-
-div.innerHTML = html;
-list.appendChild(div);
-});
-</script>
-
 </body>
 </html>
