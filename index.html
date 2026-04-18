@@ -35,6 +35,9 @@ background-position: center;
 .flex-center { display: flex; justify-content: center; gap: 2rem; flex-wrap: wrap; text-align: center; }
 .button-group { display: flex; flex-direction: column; align-items: center; gap: 0.25rem; width: 150px; }
 .button-group a { display: flex; align-items: center; justify-content: center; gap: 0.5rem; width: 100%; text-align: center; }
+.checklist-section { margin-top: 1rem; }
+.checklist-section h4 { font-weight: bold; margin-top: 0.75rem; margin-bottom: 0.5rem; }
+.checklist-label { display: block; margin: 0.25rem 0; margin-left: 1rem; }
 </style>
 </head>
 <body>
@@ -91,7 +94,7 @@ const scheduleData = [
 { day:'Fredag 01.05.26', items:[
 {time:'11:00', text:'Padel 2t på <a href="https://www.google.com/maps/place/Riviera11+Sports+Club" target="_blank" class="text-blue-600 underline">Riviera11 Sports Club</a>'},
 {time:'14:00', text:"Lunsj a'la Maanum i huset"},
-{time:'20:00', text:'Restaurant El Olivo - <a href="https://www.tripadvisor.com/Restaurant_Review-g1892987-d1917642-Reviews-El_Olivo_de_la_Cala-La_Cala_de_Mijas_Mijas_Costa_del_Sol_Province_of_Malaga_Anda.html" target="_blank" class="text-blue-600 underline">Tripadvisor</a>'},
+{time:'20:00', text:'Restaurant El Olivo - <a href="https://www.tripadvisor.com/Restaurant_Review-g1892987-d1917642-Reviews-El_Olivo_de_la_Cala-La_Cala_de_Mijas_Mijas_Costa_del_Sol_Province_of_Malaga_[]
 ]},
 { day:'Lørdag 02.05.26', items:[
 {time:'11:00-13:00', text:'Padelturnering på Riviera11 Sport Club'},
@@ -101,30 +104,65 @@ const scheduleData = [
 { day:'Søndag 03.05.26', items:[
 {time:'11:00', text:'Tur langs Sendero Litoral'},
 {time:'15:00', text:'Lunch et sted rundt Capobino/Luna Beach'},
-    {time:'20:00', text:'En eller annen restaurant '},
-    {time:'20:00', text:'Restaurant ??? - },
+{time:'20:00', text:'En eller annen restaurant '},
+{time:'20:00', text:'Restaurant ??? - },
 ]},
 { day:'Mandag 04.05.26', items:[
 {time:'11:00', text:'Padel 2t på Riviera11 Sports Club'},
 {time:'Resten av dagen', text:'Avslapping rundt hus'},
 ]},
 { day:'Tirsdag 05.05.26', items:[
-    {time:'18:30', text:'Avreise til AGP med privatsjåfør'},
-    {time:'20:05', text:'Avgang AGP'},
-    {time:'18:30', text:'Avreise til AGP med privatsjåfør'},
-    {time:'20:15', text:'Avgang AGP'},
+{time:'18:30', text:'Avreise til AGP med privatsjåfør'},
+{time:'20:05', text:'Avgang AGP'},
 {time:'23:55', text:'Ankomst BGO'},
 ]},
 { day:'Onsdag 06.05.26', items:[
 {time:'Hele dagen', text:'Fyllesyk'},
-]}
+], checklist: true}
 ];
 
 const list = document.getElementById("schedule");
 scheduleData.forEach(day => {
 const div = document.createElement('div');
-div.innerHTML = '<h3 class="font-bold text-xl mb-1 underline">' + day.day + '</h3>' +
+let html = '<h3 class="font-bold text-xl mb-1 underline">' + day.day + '</h3>' +
 '<ul class="space-y-1">' + day.items.map(i => '<li class="p-2 rounded"><strong>' + i.time + '</strong> – ' + i.text + '</li>').join('') + '</ul>';
+
+if (day.checklist) {
+html += '<div class="checklist-section">';
+html += '<h4>📋 Huskeliste:</h4>';
+html += '<h5 style="font-weight: bold; margin: 0.5rem 0 0.25rem;">Klær</h5>';
+html += '<label class="checklist-label"><input type="checkbox"> T-skjorter</label>';
+html += '<label class="checklist-label"><input type="checkbox"> Shorts</label>';
+html += '<label class="checklist-label"><input type="checkbox"> Lett bukse/jeans</label>';
+html += '<label class="checklist-label"><input type="checkbox"> Undertøy</label>';
+html += '<label class="checklist-label"><input type="checkbox"> Sokker</label>';
+html += '<label class="checklist-label"><input type="checkbox"> Lett genser/jakke</label>';
+html += '<label class="checklist-label"><input type="checkbox"> Badetøy</label>';
+html += '<label class="checklist-label"><input type="checkbox"> Treningsklær (2–3 sett)</label>';
+html += '<h5 style="font-weight: bold; margin: 0.5rem 0 0.25rem;">Padel og sport</h5>';
+html += '<label class="checklist-label"><input type="checkbox"> Padel-/treningssko</label>';
+html += '<label class="checklist-label"><input type="checkbox"> Treningssokker</label>';
+html += '<label class="checklist-label"><input type="checkbox"> Padelracket</label>';
+html += '<label class="checklist-label"><input type="checkbox"> Liten treningsbag</label>';
+html += '<h5 style="font-weight: bold; margin: 0.5rem 0 0.25rem;">Toalettartikler</h5>';
+html += '<label class="checklist-label"><input type="checkbox"> Tannbørste</label>';
+html += '<label class="checklist-label"><input type="checkbox"> Tannkrem</label>';
+html += '<label class="checklist-label"><input type="checkbox"> Deodorant</label>';
+html += '<label class="checklist-label"><input type="checkbox"> Barberutstyr</label>';
+html += '<label class="checklist-label"><input type="checkbox"> Solkrem</label>';
+html += '<label class="checklist-label"><input type="checkbox"> Aftersun</label>';
+html += '<h5 style="font-weight: bold; margin: 0.5rem 0 0.25rem;">Annet</h5>';
+html += '<label class="checklist-label"><input type="checkbox"> Solbriller</label>';
+html += '<label class="checklist-label"><input type="checkbox"> Pen skjorte/poloskjorte</label>';
+html += '<label class="checklist-label"><input type="checkbox"> Belte</label>';
+html += '<label class="checklist-label"><input type="checkbox"> Powerbank</label>';
+html += '<label class="checklist-label"><input type="checkbox"> Hodetelefoner</label>';
+html += '<label class="checklist-label"><input type="checkbox"> Pass</label>';
+html += '<label class="checklist-label"><input type="checkbox"> Lommebok/kort</label>';
+html += '<label class="checklist-label"><input type="checkbox"> Mobil og lader</label>';
+html += '</div>';\n}
+
+div.innerHTML = html;
 list.appendChild(div);
 });
 </script>
